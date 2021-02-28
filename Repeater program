@@ -1,0 +1,129 @@
+/*
+I am going to try to write a program that can take encoder data that is given externally,
+and use that to try and power the motors to replicate the data that is given.
+It will be very hard for a novice like me.
+
+Post Script (about two weeks later), 
+Hi I started writing this program an estimated 20 man-hours ago
+and needless to say its inefficiant and too way to long to write
+but as a FIRST Student, I do not give up.
+*/
+//the library
+#include <Romi32U4.h> 
+
+//initialzes motors and encoders
+Romi32U4Encoders encoders;
+Romi32U4Motors motors;
+Romi32U4Buzzer buzzer;
+static void Romi32U4Encoders::init();
+
+
+
+//an array is used to ontain the values of what
+//was previously recorded
+int myIntsR[15] = {1904, 2642, 3086, 3762, 5290, 6850, 7629, 8122, 9921, 9921, 10457, 10457, 12202, 12202, 14288 };//right given
+int myIntsL[15] = {1904, 1904, 2362, 2362, 3929, 3929, 4722, 4722, 6502, 7002, 7594, 9096, 10872, 12186, 14270 };//left given
+//15 indexes available( 0-14 )
+
+//the variables for advancing the right and left array access
+byte R = 0;
+byte L = 0;  
+
+
+//the countdown timer to signal the robot begining its run
+void setup() {
+  delay(5000);
+  buzzer.playFromProgramSpace;
+  delay(1000);
+  buzzer.playFromProgramSpace;
+  delay(1000);
+  buzzer.playFromProgramSpace;
+  delay(1000);
+  buzzer.playFromProgramSpace;
+}
+
+//the main program (obviously)
+void loop() {
+ /*
+  if (R = 15){
+    return;
+  }
+  */
+  //the 2 lines directly below this comment
+  //are reading the encoders and turning their
+  //values into variables which can be used
+  //in later functions
+  static int16_t currentL = encoders.getCountsLeft();
+  static int16_t currentR = encoders.getCountsRight();  
+
+  //the 2 lines directly below this comment
+  //are giving the number that is pulled from
+  //the array index and giving it a variable name
+  static int givenL = myIntsL[L];
+  static int givenR = myIntsR[R];
+
+
+  //the following IF program will advance the array index of both 
+  //left and right array indexes, f both the left and right
+  //current are greater than or equal to the given
+  
+  if (currentL >= givenL) {
+    while(currentR >= givenR);
+      goto ArrayAdvance;
+      ArrayAdvance:
+      //the 2 lines directly below this comment
+      //are incrementing the variables which are in 
+      //place of the array index
+      R = R + 1;
+      L = L + 1;
+      return; 
+  }  
+  //if the IF and/or WHILE statement(s) are false,
+  //the loop will begin over again, without advancing the
+  //array indexes first  
+  else{
+    return;
+  }
+  
+
+
+
+
+//the following if statments are intended to control the motors 
+//based on what the given data is in comparison to what the 
+//current data is
+ if (givenL > currentL) {
+    motors.setRightSpeed(150);
+    delay(100);
+    motors.setLeftSpeed(300);
+  } else {
+    motors.setLeftSpeed(0);
+  }
+
+/*
+  if (givenL < currentL) {
+    motors.setLeftSpeed(-300);
+  } else {
+    motors.setLeftSpeed(0);
+  }
+*/
+  
+  if (givenR > currentR) {
+    motors.setRightSpeed(150);
+    delay(100);
+    motors.setRightSpeed(300);
+  } else {
+    motors.setRightSpeed(0);
+  }
+
+/*
+  if (givenR < currentR) {
+    motors.setRightSpeed(-300);
+  } else {
+    motors.setRightSpeed(0);
+  }
+*/
+}
+
+
+
